@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Chatbot Assistant</title>
+    <link rel="stylesheet" href="/static/style.css"> <!-- Link to the external CSS file -->
+    <style>
+        /* You can add custom CSS to improve appearance */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        .upload-container, .chat-container {
+            margin-bottom: 30px;
+        }
+        #chat-box {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+            background-color: #fff;
+            margin-bottom: 10px;
+        }
+        #chat-box p {
+            margin: 5px 0;
+        }
+        .upload-container input[type="file"] {
+            margin: 10px 0;
+        }
+        .upload-container button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        .upload-container button:hover {
+            background-color: #45a049;
+        }
+        .upload-container p, .chat-container p {
+            font-size: 14px;
+            color: #555;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 5px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>PDF Chatbot Assistant</h1> <!-- Main title -->
+
+    <!-- Upload Section -->
+    <div class="upload-container">
+        <h2>Upload PDF Documents</h2>
+        <form id="upload-form" enctype="multipart/form-data">
+            <input type="file" name="files" accept="application/pdf" multiple required>
+            <button type="submit">Upload PDFs</button>
+        </form>
+        <p id="upload-status"></p>
+        <div id="file-list"></div>
+    </div>
+
+    <!-- Chat Section -->
+    <div class="chat-container">
+        <h2>Chat with Your PDFs</h2>
+        <div id="chat-box"></div>
+        <input type="text" id="chat-input" placeholder="Ask a question..." />
+        <button id="send-btn">Send</button>
+    </div>
+
+    <script>
+        // Handle PDF upload
+        document.getElementById("upload-form").addEventListener("submit", async function(e) {
+            e.preventDefault(); // Prevent default form submission
+            const formData = new FormData();
+            const files = this.files.files;
+            const fileListDiv = document.getElementById("file-list");
+            fileListDiv.innerHTML = ""; // Clear previous file list
+
+            // Append files and display names
+            for (let i = 0; i < files.length; i++) {
+                formData.append("files", files[i]);
+                fileListDiv.innerHTML += `<p>Uploading: ${files[i].name}</p>`;
+            }
+
+            document.getElementById("upload-status").innerText = "Uploading PDFs...";
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                document.getElementById("upload-status").innerText = result.message || result.error;
+
+                if (result.images && result.images.length > 0) {
+                    fileListDiv.innerHTML += `<p>Extracted ${result.images.length} images from uploaded PDFs.</p>`;
+                }
+            } catch (error) {
+                document.getElementById("upload-status").innerText = "Error uploading files.";
+            }
+        });
+
+        // Handle chat input
+        document.getElementById("send-btn").addEventListener("click", sendMessage);
+        document.getElementById("chat-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const query = document.getElementById("chat-input").value;
+            if (!query) return;
+
+            const chatBox = document.getElementById("chat-box");
+            chatBox.innerHTML += `<p><strong>You:</strong> ${query}</p>`;
+            document.getElementById("chat-input").value = "";
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+
+                const result = await response.json();
+                chatBox.innerHTML += `<p><strong>Bot:</strong> ${result.answer}</p>`;
+
+                // Display associated images
+                if (result.images && result.images.length > 0) {
+                    chatBox.innerHTML += `<p><strong>Associated Images:</strong></p>`;
+                    result.images.forEach(imagePath => {
+                        chatBox.innerHTML += `<img src="${imagePath}" alt="Associated Image" style="max-width: 200px; margin: 5px;">`;
+                    });
+                }
+
+                chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll
+            } catch (error) {
+                chatBox.innerHTML += `<p><strong>Error:</strong> Unable to get response.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

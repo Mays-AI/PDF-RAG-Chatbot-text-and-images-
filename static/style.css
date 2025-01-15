@@ -1,0 +1,10 @@
+/* Basic styling for form and chat */
+body { font-family: Arial, sans-serif; margin: 20px; }
+.chat-container, .upload-container { max-width: 600px; margin: 20px auto; }
+#chat-box { border: 1px solid #ddd; padding: 10px; height: 300px; overflow-y: scroll; margin-bottom: 10px; }
+#chat-input { width: 80%; padding: 10px; }
+#send-btn { padding: 10px 20px; }
+img { max-width: 100%; height: auto; margin: 5px 0; } /* Ensure images fit the chat box */
+.file-list { margin-top: 10px; font-size: 0.9em; color: #555; }
+h2 { font-size: 1.5em; margin-bottom: 10px; color: #333; } /* Improve title styling */
+h1 { font-size: 2em; color: #007BFF; text-align: center; margin-bottom: 20px; } /* Main title style */

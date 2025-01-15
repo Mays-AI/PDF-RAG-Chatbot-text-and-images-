@@ -1,0 +1,46 @@
+# Interactive PDF RAG Chatbot (text and images)
+
+## Overview
+Retrieval-Augmented Generation (RAG) system using Flask, PyMuPDF, Azure Document Intelligence and Azure OpenAI to create an interactive chatbot that answers questions based on the content of uploaded PDF documents. The PDF Chatbot is a web application that allows users to upload PDF documents and interact with them through natural language queries. The application extracts text and images from the uploaded PDFs, stores them for easy retrieval.
+
+
+## Features
+- Upload multiple PDF documents.
+- Extract and store text and images from uploaded PDFs.
+- Chunk text for efficient querying.
+- Generate semantic embeddings for text using Azure OpenAI.
+- Perform similarity searches against the extracted text.
+- Provide contextual answers with the page number to user queries and display associated images.
+
+## Summary of Functionality
+This web application allows users to:
+
+Upload PDF files via the web interface.
+Extract text and images from the PDFs using Azure Document Intelligence's Layout model and PyMuPDF.
+Chunk the extracted text for efficient searching and embedding.
+Generate semantic embeddings for the extracted text using Azure OpenAI.
+Index the embeddings in FAISS for fast retrieval.
+Query the extracted content and receive answers based on the context.
+Retrieve relevant images associated with the query results, and display the page numbers from where the content was extracted.
+
+
+## Technologies Used
+Flask: Web framework for building the application.
+PyMuPDF (fitz): Library for reading and extracting text and images from PDFs.
+Azure Document Intelligence (Form Recognizer): Used to extract text, layout, and images from PDFs via the prebuilt layout model.
+FAISS: Library for efficient similarity search and clustering of dense vectors (used for indexing and querying text embeddings).
+Azure OpenAI: For generating text embeddings and providing answers based on user queries (using models like text-embedding-ada-002 and gpt-4o).
+HTML/CSS/JavaScript: For building the front-end user interface.
+
+
+## Prerequisites
+Before running the application, ensure you have the following installed:
+
+Python 3.x
+Pip (Python package installer)
+You will also need the following environment variables set in a .env file:
+
+AZURE_OAI_KEY: Your Azure OpenAI API key.
+AZURE_OAI_ENDPOINT: The endpoint for Azure OpenAI.
+AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT: The endpoint for Azure Document Intelligence.
+AZURE_DOCUMENT_INTELLIGENCE_KEY: The API key for Azure Document Intelligence.
